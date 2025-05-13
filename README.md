@@ -43,6 +43,13 @@ source semgrep_env/bin/activate
 ```bash
 pip install semgrep
 ```
+Si tuvieras algún problema con la instalación con `pip` puedes probar con snap:
+
+```bash
+sudo apt install snap
+snap install semgrep
+```
+
 
 4. Comprobar instalación:
 ```bash
