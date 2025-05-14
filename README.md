@@ -52,7 +52,7 @@ Vemos como ya no aparece nuestro usuario en el `prompt` sino el entorno virtual 
 ```bash
 pip install semgrep
 ```
-> Si tuvieras algún problema con la instalación con `pip` puedes probar con snap:
+> **Si tuvieras algún problema** con la instalación con `pip` puedes probar con `snap`:
 
 ```bash
 sudo apt install snap
@@ -269,6 +269,104 @@ Ejemplo: Si las pruebas CI pasan, el código se despliega automáticamente en pr
 ## Integración de Semgrep en GitHub Actions
 
 Vamos a ver un ejemplo de CD/CI en `GitHub Actions`. Se trata de un pipeline que prueba código y lo despliega automáticamente si todo está bien:
+
+
+Este repositorio es una prueba de integración de **Semgrep**, una herramienta de análisis estático (SAST), en un pipeline de GitHub Actions. La idea es usar un ejemplo sencillo en Python para validar que Semgrep se ejecuta correctamente en el flujo de CI/CD.
+
+---
+
+### 📁 Estructura del proyecto
+
+```
+semgrep-prueba/
+├── .github/
+│   └── workflows/
+│       └── semgrep.yml
+├── main.py
+└── README.md
+```
+
+---
+
+### 🐍 Código de ejemplo (`main.py`)
+
+```python
+def main():
+    print("Hola Mundo")
+
+if __name__ == "__main__":
+    main()
+```
+
+---
+
+### ⚙️ Pipeline de GitHub Actions (`.github/workflows/semgrep.yml`)
+
+```yaml
+name: Semgrep SAST Scan
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+
+jobs:
+  semgrep:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v4
+
+      - name: Instalar Semgrep
+        run: pip install semgrep
+
+      - name: Ejecutar análisis
+        run: semgrep --config=auto --json --output=semgrep-results.json
+
+      - name: Mostrar resultados
+        run: cat semgrep-results.json
+
+      - name: Guardar reporte
+        uses: actions/upload-artifact@v3
+        with:
+          name: semgrep-report
+          path: semgrep-results.json
+```
+
+---
+
+### 🚀 Cómo probarlo
+
+1. Crea un nuevo repositorio en GitHub (por ejemplo: `semgrep-prueba`).
+2. Clónalo en local:
+    ```bash
+    git clone https://github.com/tu-usuario/semgrep-prueba.git
+    cd semgrep-prueba
+    ```
+3. Crea la estructura de carpetas:
+    ```bash
+    mkdir -p .github/workflows
+    touch main.py README.md .github/workflows/semgrep.yml
+    ```
+4. Añade el contenido del código y el workflow según los bloques anteriores.
+5. Haz commit y push:
+    ```bash
+    git add .
+    git commit -m "Primer commit con hola mundo y semgrep"
+    git push origin main
+    ```
+6. Ve a la pestaña **Actions** en GitHub para ver el pipeline en ejecución.
+
+---
+
+### ✅ Resultado esperado
+
+El análisis estático de Semgrep debería ejecutarse automáticamente en cada `push` a `main` o `develop`, o en cada `pull_request`, mostrando los resultados en la pestaña de Actions y guardando un reporte JSON como artefacto.
+
+
 
 Crear archivo: `.github/workflows/semgrep.yml`
 
