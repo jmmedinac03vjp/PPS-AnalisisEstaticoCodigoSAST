@@ -29,21 +29,30 @@ Usar SAST para detectar problemas de seguridad en el código sin ejecutarlo.
 
 ## Instalación de Semgrep en entorno virtual
 
+Esta opción evita conflictos con los paquetes del sistema y permite gestionar dependencias de forma aislada.
+
 1. Crear un entorno virtual:
+
 ```bash
 python3 -m venv semgrep_env
 ```
 
 2. Activarlo:
+
 ```bash
 source semgrep_env/bin/activate
 ```
+Vemos como ya no aparece nuestro usuario en el `prompt` sino el entorno virtual activado `semgrep_env`
 
-3. Instalar Semgrep:
+![](images/ad1.png)
+
+
+3. Instalar Semgrep dentro del entorno virtual que hemos creado:
+ 
 ```bash
 pip install semgrep
 ```
-Si tuvieras algún problema con la instalación con `pip` puedes probar con snap:
+> Si tuvieras algún problema con la instalación con `pip` puedes probar con snap:
 
 ```bash
 sudo apt install snap
@@ -52,6 +61,7 @@ snap install semgrep
 
 
 4. Comprobar instalación:
+
 ```bash
 semgrep --version
 ```
@@ -63,19 +73,25 @@ deactivate
 
 ---
 
-## Análisis con Semgrep sobre NodeGoat
+## Análisis con Semgrep sobre NodeGoates una aplicación vulnerable creada para prácticas de seguridad con Node.js y MongoDB.
 
 ### ¿Qué es NodeGoat?
 
-[NodeGoat](https://github.com/OWASP/NodeGoat) es una aplicación vulnerable creada para prácticas de seguridad con Node.js y MongoDB.
+[NodeGoat](https://github.com/OWASP/NodeGoat) es una aplicación web de código abierto desarrollada por **OWASP** (Open Web Application Security Project) que sirve como plataforma de aprendizaje para la seguridad en aplicaciones **Node.js**.
 
-### Vulnerabilidades incluidas:
-- Inyección MongoDB
-- Cross-Site Scripting (XSS)
-- Cross-Site Request Forgery (CSRF)
-- Almacenamiento inseguro de contraseñas
-- Fallos de autenticación
-- Mal uso de funciones de Node.js
+Características Principales de NodeGoat
+1. Aplicación Vulnerable Intencionalmente: Contiene fallos de seguridad reales para practicar y aprender. Similar a otras plataformas como OWASP Juice Shop y Damn Vulnerable Web App (DVWA).
+2. Simula un Entorno de Producción: Está desarrollada con `Node.js`, `Express.js` y `MongoDB`. Permite a los usuarios comprender cómo se implementan y explotan vulnerabilidades en aplicaciones reales.
+3. Vulnerabilidades Presentes en NodeGoat: NodeGoat incluye ejemplos de diversas vulnerabilidades, como:
+	- Inyección MongoDB
+	- Cross-Site Scripting (XSS)
+	- Cross-Site Request Forgery (CSRF)
+	- Almacenamiento inseguro de contraseñas
+	- Fallos de autenticación
+	- Mal uso de funciones de Node.js
+
+4. Ejercicios y Laboratorios Prácticos: `OWASP NodeGoat` proporciona guías interactivas y retos para que los usuarios exploten y solucionen las vulnerabilidades.
+5. Facilidad de Instalación: Se puede ejecutar localmente con ` Docker`, `Node.js` o en plataformas en la nube como `Heroku`.
 
 ### Clonar y acceder al proyecto:
 ```bash
@@ -85,69 +101,174 @@ cd NodeGoat
 
 ---
 
-## Ejecutar Semgrep
+## Semgrep
+
+**Semgrep** <https://github.com/semgrep/semgrep> es una herramienta de análisis estático rápida y de código abierto que busca código, encuentra errores y aplica normas de seguridad y estándares de codificación. Semgrep es compatible con más de 30 lenguajes y puede ejecutarse en un IDE, como comprobación previa al compromiso y como parte de flujos de trabajo CI/CD.
 
 ### Instalación rápida:
+
 ```bash
 pip install semgrep
 ```
 
 ### Análisis automático del código:
+
+Activiamos el entorno virtual y ejecutamos:
+
 ```bash
+source semgrep_env/bin/activate
 semgrep --config=auto .
 ```
+![](images/ad2.png)
+
+	`--config=auto`  → Utiliza reglas automáticas recomendadas para detectar vulnerabilidades comunes.
+	`.` → Escanea todo el código dentro del directorio actual.
+
+![](images/ad7.png)
+
+
+Esperamos a que se muestren los resultados y vemos cómo nos aparecen 109 problemas:
+
+
+![](images/ad3.png)
 
 ### Resultado:
-- Muestra archivo y línea
-- Tipo de vulnerabilidad
-- Recomendación
 
+Después de ejecutar el comando, Semgrep mostrará una lista de posibles vulnerabilidades con detalles como:
+
+• El archivo y la línea donde se encuentra la vulnerabilidad.
+• El tipo de riesgo detectado (XSS, Inyección NoSQL, CSRF, etc.).
+• Recomendaciones para corregir el problema. También nos indica la página web donde podemos encontrar la explicación de la regla
+
+![](images/ad4.png)
+
+Si pulsamos el enlace de la regla, nos llevará a la página de <https://sengreo,dev>, donde podemos encontrar información del problema y referencias a él.
+
+![](images/ad5.png)
+
+En la siguiente captura vemos más detalles:
+
+![](images/ad6.png)
 ---
+
 
 ## Reglas OWASP Top 10
 
+
 Puedes usar reglas específicas del proyecto OWASP con:
+
 ```bash
 semgrep --config "p/owasp-top-ten" .
 ```
+
+Esto buscará vulnerabilidades basadas en las 10 amenazas más críticas de OWASP.
+
+En esta ocasión vemos que sólo hemos encontrado 44 problemas de esa categoría.
+
+![](images/ad7.png)
 
 ---
 
 ## Ejemplo: Código vulnerable vs seguro
 
-### ❌ Código vulnerable:
+### Evitar concatenación de datos en consultas SQL
+
+ ❌ **Código vulnerable**:
 ```javascript
 db.query("SELECT * FROM users WHERE username = '" + user + "'");
 ```
 
-### ✅ Código corregido:
+ ✅ **Código corregido**:
+
 ```javascript
 db.query("SELECT * FROM users WHERE username = ?", [user]);
 ```
 
 ---
 
-## CI/CD con Semgrep
+## Automatizar SAST en CI/CD (Integración y Entrega Continua)
 
 ### ¿Qué es CI/CD?
 
-- **CI (Integración Continua)**: Automatiza pruebas tras cada cambio.
-- **CD (Entrega / Despliegue Continuo)**:
-  - Entrega: preparado para producción.
-  - Despliegue: se lanza automáticamente.
+**CI/CD** es un conjunto de prácticas de desarrollo de software que permite la integración automática, pruebas y despliegue de código de manera rápida y segura. Se compone de dos conceptos principales:
 
-### Herramientas comunes:
+#### CI (Integración Continua - Continuous Integration)
 
-| CI             | CD             |
-|----------------|----------------|
-| GitHub Actions | Docker         |
-| GitLab CI/CD   | Kubernetes     |
-| Jenkins        | AWS CodeDeploy |
-| Travis CI      | ArgoCD         |
+**CI** se enfoca en automatizar la integración del código en un repositorio compartido.
+
+
+**Objetivo**:
+
+• Permitir que los desarrolladores suban código frecuentemente.
+
+• Ejecutar pruebas automatizadas para detectar errores lo antes posible.
+
+• Asegurar que cada cambio en el código es estable y funcional.
+
+
+**Ejemplo de CI**:
+
+1. Un desarrollador hace un push de código a GitHub.
+
+2. GitHub Actions (o GitLab CI, Jenkins, etc.) ejecuta pruebas automáticamente.
+
+3. Si las pruebas fallan, el desarrollador recibe una notificación.
+
+4. Si todo está bien, el código se fusiona en la rama principal (main o develop).
+
+
+**Herramientas populares de CI**:
+- GitHub Actions
+- GitLab CI/CD
+- Jenkins
+- Travis CI
+- CircleCI
+
+
+#### CD (Entrega y/o Despliegue Continuo - Continuous Delivery / Continuous Deployment)
+
+CD se divide en dos enfoques:
+
+ **Entrega Continua (Continuous Delivery)**
+
+Se asegura de que el código esté siempre listo para desplegarse, pero el despliegue es manual.
+Ejemplo: Una actualización está lista en producción, pero un ingeniero revisa y aprueba el despliegue.
+
+ **Despliegue Continuo (Continuous Deployment)**
+Automatiza completamente el despliegue de código a producción sin intervención manual.
+Ejemplo: Si las pruebas CI pasan, el código se despliega automáticamente en producción.
+
+**Herramientas populares de CD**:
+
+- Docker
+
+- Kubernetes
+
+- AWS CodeDeploy
+
+- GitHub Actions (para despliegue)
+- ArgoCD
+
+**¿Por qué es importante CI/CD?**
+- Reducción de errores → Los problemas se detectan temprano.
+
+- Automatización → Se eliminan procesos manuales, ahorrando tiempo.
+
+- Despliegues rápidos → Facilita la entrega de nuevas funcionalidades.
+
+- Mejora la calidad del software → Pruebas constantes aseguran estabilidad.
+
+ | *CI/CD*                       | **Descripción**                                         |
+ |-------------------------------|---------------------------------------------------------|
+ | **CI (Integración Continua)**:| Automatiza pruebas tras cada cambio.                    |
+ | **CD (Entrega Continua)**:    | Código listo para desplegar, pero con aprobación manual.|
+ | **CD (Despliegue Continuo)**: | Automatiza completamente el despliegue a producción     |
 
 ---
 
 ## Integración de Semgrep en GitHub Actions
+
+Vamos a ver un ejemplo de CD/CI en `GitHub Actions`. Se trata de un pipeline que prueba código y lo despliega automáticamente si todo está bien:
 
 Crear archivo: `.github/workflows/semgrep.yml`
 
@@ -189,8 +310,16 @@ jobs:
 
 ## Crear reglas personalizadas
 
-Archivo: `semgrep-rules.yaml`
+GitHub Actions usa archivos YAML dentro de .github/workflows/ para definir los pipelines.
 
+Crea un archivo en tu repositorio: 
+```bash
+nano .github/workflows/semgrep.yml
+```
+
+Agrega el siguiente contenido para ejecutar Semgrep en cada push y pull request:
+
+Archivo: `semgrep-rules.yaml`
 ```yaml
 rules:
   - id: detect-insecure-sql
