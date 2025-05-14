@@ -275,7 +275,25 @@ Este repositorio es una prueba de integración de **Semgrep**, una herramienta d
 
 ---
 
-### 📁 Estructura del proyecto
+
+### 🚀 Cómo probarlo
+
+1. Crea un nuevo repositorio en GitHub (por ejemplo: `semgrep-prueba`).
+
+![](images/ad10.png)
+
+
+2. Clónalo en local:
+    ```bash
+    git clone https://github.com/tu-usuario/semgrep-prueba.git
+    cd semgrep-prueba
+    ```
+3.  📁 Crea la estructura de carpetas:
+    ```bash
+    mkdir -p .github/workflows
+    touch main.py README.md .github/workflows/semgrep.yml
+    ```
+**Estructura del proyecto**
 
 ```
 semgrep-prueba/
@@ -285,23 +303,31 @@ semgrep-prueba/
 ├── main.py
 └── README.md
 ```
+ **Código de ejemplo**
+ 
+[Aquí tienes el archivo `main.phy`](files/main.py)
 
----
-
-### 🐍 Código de ejemplo (`main.py`)
-
+Nos pide que introduzcamos un comando y utiliza `eval`. El análisis nos dará problemas relacionado con `eval()`
+.
+archivo `main.py`
 ```python
+# main.py
 def main():
-    print("Hola Mundo")
+    comando = input("Introduce un comando de Python: ")
+    eval(comando)  # ⚠️ Uso peligroso de eval()
 
 if __name__ == "__main__":
     main()
 ```
 
 ---
+4. ⚙️  Añade el workflow 
+---
 
-### ⚙️ Pipeline de GitHub Actions (`.github/workflows/semgrep.yml`)
+[Aquí puedes descargar el Pipeline de GitHub Actions `.github/workflows/semgrep.yml`](files/semgrep.yml)
 
+
+Pipeline de GitHub Actions `.github/workflows/semgrep.yml`
 ```yaml
 name: Semgrep SAST Scan
 
@@ -330,28 +356,12 @@ jobs:
         run: cat semgrep-results.json
 
       - name: Guardar reporte
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: semgrep-report
           path: semgrep-results.json
 ```
 
----
-
-### 🚀 Cómo probarlo
-
-1. Crea un nuevo repositorio en GitHub (por ejemplo: `semgrep-prueba`).
-2. Clónalo en local:
-    ```bash
-    git clone https://github.com/tu-usuario/semgrep-prueba.git
-    cd semgrep-prueba
-    ```
-3. Crea la estructura de carpetas:
-    ```bash
-    mkdir -p .github/workflows
-    touch main.py README.md .github/workflows/semgrep.yml
-    ```
-4. Añade el contenido del código y el workflow según los bloques anteriores.
 5. Haz commit y push:
     ```bash
     git add .
@@ -360,51 +370,27 @@ jobs:
     ```
 6. Ve a la pestaña **Actions** en GitHub para ver el pipeline en ejecución.
 
+El análisis estático de Semgrep debería ejecutarse automáticamente en cada `push` a `main` o `develop`, o en cada `pull_request`, mostrando los resultados en la pestaña de Actions y guardando un reporte JSON como artefacto.
+
+![](images/ad11.png)
+
 ---
 
 ### ✅ Resultado esperado
 
-El análisis estático de Semgrep debería ejecutarse automáticamente en cada `push` a `main` o `develop`, o en cada `pull_request`, mostrando los resultados en la pestaña de Actions y guardando un reporte JSON como artefacto.
+Alli encontraremos el resultado de la ejecución de `semgrep`.
+
+![](images/ad12.png)
+
+Y podemos descargar el archivo .json con información sobre el resultado.
+
+![](images/ad13.png)
+
+Abajo podemos ver la información sobre el problema introducido por el uso de `eval()`
+
+![](images/ad14.png)
 
 
-
-Crear archivo: `.github/workflows/semgrep.yml`
-
-```yaml
-name: Semgrep SAST Scan
-
-on:
-  push:
-    branches:
-      - main
-      - develop
-  pull_request:
-
-jobs:
-  semgrep:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Clonar repositorio
-        uses: actions/checkout@v4
-
-      - name: Instalar Semgrep
-        run: pip install semgrep
-
-      - name: Ejecutar análisis
-        run: semgrep --config=auto --json --output=semgrep-results.json
-
-      - name: Mostrar resultados
-        run: cat semgrep-results.json
-
-      - name: Guardar reporte
-        uses: actions/upload-artifact@v3
-        with:
-          name: semgrep-report
-          path: semgrep-results.json
-```
-
----
 
 ## Crear reglas personalizadas
 
