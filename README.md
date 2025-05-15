@@ -367,7 +367,7 @@ jobs:
           path: semgrep-results.json
 ```
 
-Explicación:
+
 - Al hacer `push` sobre ramas `main` y `develop` se desencadena la ejecuciónn que indicamos.
 - Pasos que hacemos:
 	- Instalamos `semgrep` con `pip` (por si no estuviera instalado).
@@ -422,11 +422,14 @@ rules:
 
 ```
 
-Como vemos podemos personalizar:
-- Patrón a buscar.
-- Mensaje a mostrar.
-- Serveridad o gravedad.
-- Lenguajes de programación a los que se aplica.
+Explicación:
+**pattern**: **eval(...)** → Detecta cualquier uso de `eval()`.
+
+**message** → Muestra una advertencia indicando los riesgos de `eval()`.
+
+**severity**: **WARNING** → Indica que es una advertencia, aunque puedes cambiarlo a ERROR si lo deseas.
+
+**languages**: **python** → Especifica que la regla aplica a código Python.
 
 
 ### Ejecutar análisis con las reglas personalizadas.
