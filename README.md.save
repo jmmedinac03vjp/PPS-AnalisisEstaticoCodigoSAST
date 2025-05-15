@@ -322,14 +322,10 @@ if __name__ == "__main__":
 
 ---
 4. ⚙️  Añade el workflow 
-
-GitHub Actions usa archivos YAML dentro de .github/workflows/ para definir los pipelines.
-
-Los `pipelines` son acciones que se desencadenan después de determinadas ejecuciones de git, como pueden ser `push`, `pull` o aquellas que decidamos.
+---
 
 [Aquí puedes descargar el Pipeline de GitHub Actions `.github/workflows/semgrep.yml`](files/semgrep.yml)
 
-Crea el siguiente archivo para ejecutar Semgrep en cada push y pull request:
 
 Pipeline de GitHub Actions `.github/workflows/semgrep.yml`
 ```yaml
@@ -365,13 +361,16 @@ jobs:
           name: semgrep-report
           path: semgrep-results.json
 ```
+Explicación del Workflow
+• on:
+	o Ejecuta el análisis en cada push y pull request en las ramas main y develop.
+• jobs:
+	o Instala Semgrep usando pip install semgrep.
+	o Ejecuta el escaneo con reglas automáticas (--config=auto).
+	o Guarda los resultados en un archivo JSON (semgrep-results.json).
+	o Muestra los resultados en la consola.
+	o Guarda el reporte como artefacto, para revisar los hallazgos más tarde.
 
-Explicación:
-- Ejecutamos al hacer `push` sobre ramas `main` y `develop`.
-- Pasos que hacemos:
-	- Instalamos semgrep con pip (por si no estuviera instalado).
-	- Ejecutamos análisis con semgrep con conjunto de reglas `auto`.
-	- Guardamos el resultado en archivo semgrep-report. 
 
 5. Haz commit y push:
     ```bash
@@ -405,11 +404,19 @@ Abajo podemos ver la información sobre el problema introducido por el uso de `e
 
 ## Crear reglas personalizadas
 
-Hasta ahora en la ejecución de `semgrep` hemos utilizado el conjunto de reglas por defecto ` --config=auto` `--config=semgrep-rules.yaml` o también el conjunto de reglas de **OWASP** `--config "p/owasp-top-ten"`
+GitHub Actions usa archivos YAML dentro de .github/workflows/ para definir los pipelines.
 
-Podemos crear reglas personalizadas
+Hasta el momento hemos usado para la ejecución de `semgrep` con `semgrep --config=auto .`. Esto nos indica que realizaremos el escaneo con las reglas por defecto.
 
-Archivo: `files/custom-rules.yaml`
+Si quieres definir tus propias reglas en Semgrep, sigue estos pasos:
+
+1- Creamos una archivo `.yml` con las reglas personalizadas que queramos: 
+
+Agrega el siguiente contenido para ejecutar Semgrep en cada push y pull request:
+
+En nuestro caso vamos a crear una regla personalizada para que nos avise del uso de `eval()`. Lo hacemos en la raiz del proyecto.
+
+Archivo: `custom-rules.yaml`
 ```yaml
 rules:
   - id: eval-personalizada
@@ -417,59 +424,51 @@ rules:
     message: "Uso de eval() detectado. Eval puede ser peligroso si se usa con entrada no controlada."
     severity: WARNING
     languages:
-      - python
-
+      - python  
 ```
-
-Como vemos podemos personalizar:
-- Patrón a buscar.
-- Mensaje a mostrar.
-- Serveridad o gravedad.
-- Lenguajes de programación a los que se aplica.
+Explicación
+	o Usamos mensaje personalizado.
+	o Personalizamos también la serveridad. En este caso `warning`
+	o Se aplica a lenguaje python
 
 
-### Ejecutar análisis con las reglas personalizadas.
+### Uso de reglas personalizadas:
 
-Vamos a realizar el análisis estático sobre nuestro repositorio `semgrep-prueba`
+Para ejecutar reglas pesonalizadas desde linea de comandos
 
 ```bash
-semgrep --config=files/custom-rules.yaml .
+semgrep --config=./custom-rules.yaml
 ```
-Como vemos nos aparece el aviso indicado en la regla.
-
 ![](images/ad15.png)
-
 
 ---
 
-## Integración de reglas personalizadas con Github CI/CD
+## Integración con GitLab CI/CD
 
-Modificamos la ejecución de semgrep, en vez de  ejecutar con las reglas por defecto, lo hacemos con las reglas personalizadas.
+En Github Actions
 
-Para ello tenemos que indicarle que el conjunto de reglas a aplicar es el que hemos creado 
 
-modificar lineas del archivo ` .github/workflows/semgrep.yml`
+
+
+Pipeline de GitHub Actions `.github/workflows/semgrep.yml`
+
+Susituimos la linea que teníamos anteriormente de ejecución con reglas por defecto: `run: semgrep --config=auto --json --output=semgrep-results.json`
+
+Por la de reglas personalizadas
 ```yaml
-    - semgrep --config=auto --json --output=semgrep-results.json
-```
-
-por 
-
+        run: semgrep --config=./custom-rules --json --output=semgrep-results.json
 ```yaml
-    - semgrep --config=files/custom-rules.yaml  --json --output=semgrep-results.json
+
+---
+
+
+### Ejecutar análisis con las reglas:
+```bash
+semgrep --config=custom-rules.yaml .
 ```
+![](images/ad14.png)
 
-Al hacer un `git push` podemos ver como se ejecuta automáticament el `workflow`
-
-
-![](images/ad16.png)
-
-Si accedemos a los detalles y descargamos el archivo `semgrep-report` con el resultado en formato `JSON`, podemos ver el resultado de la ejecución:
-
-![](images/ad17.png)
-
-
-
+---
 
 ## Recursos
 
