@@ -5,8 +5,8 @@
 Identificación de vulnerabilidades en código fuente.
 
 ## Objetivo
-Usar SAST para detectar problemas de seguridad en el código sin ejecutarlo.
-
+- Usar SAST para detectar problemas de seguridad en el código sin ejecutarlo.
+- Conocer los qué es un entorno CI/CD: Integración Continua/Entrega Continua
 ---
 
 ## ¿Qué es SAST?
@@ -136,13 +136,13 @@ Esperamos a que se muestren los resultados y vemos cómo nos aparecen 109 proble
 
 Después de ejecutar el comando, Semgrep mostrará una lista de posibles vulnerabilidades con detalles como:
 
-• El archivo y la línea donde se encuentra la vulnerabilidad.
-• El tipo de riesgo detectado (XSS, Inyección NoSQL, CSRF, etc.).
-• Recomendaciones para corregir el problema. También nos indica la página web donde podemos encontrar la explicación de la regla
+- El archivo y la línea donde se encuentra la vulnerabilidad.
+- El tipo de riesgo detectado (XSS, Inyección NoSQL, CSRF, etc.).
+- Recomendaciones para corregir el problema. También nos indica la página web donde podemos encontrar la explicación de la regla
 
 ![](images/ad4.png)
 
-Si pulsamos el enlace de la regla, nos llevará a la página de <https://sengreo,dev>, donde podemos encontrar información del problema y referencias a él.
+Si pulsamos el enlace de la regla, nos llevará a la página de <https://sengreo.dev>, donde podemos encontrar información del problema y referencias a él.
 
 ![](images/ad5.png)
 
@@ -305,10 +305,10 @@ semgrep-prueba/
 ```
  **Código de ejemplo**
  
-[Aquí tienes el archivo `main.phy`](files/main.py)
+[Aquí tienes el archivo `main.py`](files/main.py)
 
-Nos pide que introduzcamos un comando y utiliza `eval`. El análisis nos dará problemas relacionado con `eval()`
-.
+Nos pide que introduzcamos un comando y utiliza `eval`. El análisis nos dará problemas relacionado con `eval()`.
+
 archivo `main.py`
 ```python
 # main.py
@@ -332,6 +332,7 @@ Los `pipelines` son acciones que se desencadenan después de determinadas ejecuc
 Crea el siguiente archivo para ejecutar Semgrep en cada push y pull request:
 
 Pipeline de GitHub Actions `.github/workflows/semgrep.yml`
+
 ```yaml
 name: Semgrep SAST Scan
 
@@ -367,11 +368,11 @@ jobs:
 ```
 
 Explicación:
-- Ejecutamos al hacer `push` sobre ramas `main` y `develop`.
+- Al hacer `push` sobre ramas `main` y `develop` se desencadena la ejecuciónn que indicamos.
 - Pasos que hacemos:
-	- Instalamos semgrep con pip (por si no estuviera instalado).
-	- Ejecutamos análisis con semgrep con conjunto de reglas `auto`.
-	- Guardamos el resultado en archivo semgrep-report. 
+	- Instalamos `semgrep` con `pip` (por si no estuviera instalado).
+	- Ejecutamos análisis con `semgrep` con conjunto de reglas `auto`.
+	- Guardamos el resultado en archivo `semgrep-report`. 
 
 5. Haz commit y push:
     ```bash
@@ -481,6 +482,7 @@ Si accedemos a los detalles y descargamos el archivo `semgrep-report` con el res
 
 ## Conclusión
 
-Usar herramientas como Semgrep permite detectar vulnerabilidades desde las primeras etapas del desarrollo, reduciendo costos y mejorando la calidad y seguridad del software. Integrar SAST en pipelines CI/CD es una buena práctica profesional recomendada por OWASP y la industria.
+- Usar herramientas como Semgrep permite detectar vulnerabilidades desde las primeras etapas del desarrollo, reduciendo costos y mejorando la calidad y seguridad del software. 
+- Integrar SAST en pipelines CI/CD es una buena práctica profesional recomendada por OWASP y la industria.
 
 ---
